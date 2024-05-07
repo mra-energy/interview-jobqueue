@@ -6,7 +6,7 @@
 # using node:22 and pnpm, but any modern js runtime and package manager should do
 pnpm i
 pnpm tsc
-docker run -it redis -p 6379:6379
+docker run -it -p 6379:6379 redis
 pnpm start
 ```
 
@@ -17,8 +17,9 @@ Here's a minimally working codebase that's using BullMQ, a Redis backed job queu
 Fortunately for our purposes, this solution is very poorly typed.
 
 Your task is to:
-1. make it typesafe to send and handle jobs 
-2. make it easy to declare new jobs and send them: you don't want your juniors to be exposed to scary notions like "queues" and "workers"
+1. build two jobs, e.g. `createJob` which has a payload of `{ name: string }` and `deleteJob` with `{ id: string }` and execute them
+2. make it typesafe to send and handle jobs
+3. make it easy to declare new jobs and send them: you don't want your juniors to be exposed to scary notions like "queues" and "workers"
 
 ## Task 2
 
