@@ -3,14 +3,12 @@ import { Queue, Worker } from "bullmq";
 
 const redisUrl = process.env.JOBQUEUE_REDIS_URL ?? "redis://localhost:6379";
 const redisClient = new Redis(redisUrl, { maxRetriesPerRequest: null });
-const myQueue = new Queue("foo", { connection: redisClient });
+const myQueue = new Queue("my-queue", { connection: redisClient });
 
 const worker = new Worker(
-  "foo",
+  "my-worker",
   async (job) => {
-    // Will print { foo: 'bar'} for the first job
-    // and { qux: 'baz' } for the second.
-    console.log(job.data);
+    console.log(job.name, job.data);
   },
   { connection: redisClient },
 );
@@ -24,8 +22,8 @@ worker.on("failed", (job, err) => {
 });
 
 async function addJobs() {
-  await myQueue.add("myJobName", { foo: "bar" });
-  await myQueue.add("myJobName", { qux: "baz" });
+  await myQueue.add("some-random-job", { foo: "bar" });
+  await myQueue.add("another-job", { qux: "baz" });
 }
 
 await addJobs();
