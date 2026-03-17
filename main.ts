@@ -1,29 +1,24 @@
-import { Redis } from "ioredis";
 import { Queue, Worker } from "bullmq";
 
-const redisUrl = process.env.JOBQUEUE_REDIS_URL ?? "redis://localhost:6379";
-const redisClient = new Redis(redisUrl, { maxRetriesPerRequest: null });
-const myQueue = new Queue("my-queue", { connection: redisClient });
+const myQueue = new Queue("my-queue");
 
-const worker = new Worker(
-  "my-worker",
-  async (job) => {
-    console.log(job.name, job.data);
-  },
-  { connection: redisClient },
-);
-
-worker.on("completed", (job) => {
-  console.log(`${job.id} has completed!`);
+const worker = new Worker("my-queue", async (job) => {
+  /* TBD */
 });
 
-worker.on("failed", (job, err) => {
-  console.log(`${job?.id} has failed with ${err.message}`);
-});
+async function _example_calls() {
+  await myQueue.add("send-email", {
+    to: "bar@email.com",
+    title: "Coucou",
+    textBody: "",
+  });
 
-async function addJobs() {
-  await myQueue.add("some-random-job", { foo: "bar" });
-  await myQueue.add("another-job", { qux: "baz" });
+  await myQueue.add("send-email", {
+    to: "bar@email.com",
+    titlee: "Coucou",
+  });
+
+  await myQueue.add("send-slack", { channelId: "42e2a32", content: "Coucou" });
 }
 
-await addJobs();
+function sendJob(/* TBD */) {}
